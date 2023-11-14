@@ -18,6 +18,8 @@ function reducer(state = initialStates, action) {
     case ACTION.ACCOUNT_DEPOSIT:
       return { ...state, balance: state.balance + action.payload };
     case ACTION.ACCOUNT_WITHDRAW:
+      if (state.balance < action.payload)
+        throw new Error("U don't have enough amount");
       return { ...state, balance: state.balance - action.payload };
     case ACTION.ACCOUNT_REQUEST_LOAN:
       if (state.loan > 0) return state;
@@ -41,3 +43,25 @@ function reducer(state = initialStates, action) {
 }
 
 const store = createStore(reducer);
+
+const withdraw = (amount) => {
+  return { type: ACTION.ACCOUNT_WITHDRAW, payload: amount };
+};
+
+const deposit = (amount) => {
+  return { type: ACTION.ACCOUNT_DEPOSIT, payload: amount };
+};
+
+const requestLoan = (amount, purpose) => {
+  return { type: ACTION.ACCOUNT_REQUEST_LOAN, payload: { amount, purpose } };
+};
+
+const payLoan = () => {
+  return { type: ACTION.ACCOUNT_REQUEST_LOAN };
+};
+
+store.dispatch(deposit(3000));
+console.log(store.getState());
+
+store.dispatch(withdraw(300));
+console.log(store.getState());
